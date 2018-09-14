@@ -1,10 +1,8 @@
 # onechat-sdk-ios
 
+## WalletCore  
 
-
-# WalletCore  
-
-## 结构   
+### 结构   
 
 - 账号管理
 - 聊天管理
@@ -39,104 +37,104 @@ BOOL exist = [ONEChatClient isHomeAccountExist];
 
 - 生成助记词   
 
-```objc
-NSString *seed = [ONEChatClient buildSeed];
-```
+	```objc
+	NSString *seed = [ONEChatClient buildSeed];
+	```
 - 获取本地存储的助记词   
 
-```objc
-NSString *seed = [ONEChatClient seedWithPassword:password];
-```
-
+	```objc
+	NSString *seed = [ONEChatClient seedWithPassword:password];
+	```
+	
 - 验证助记词是否合法
 
-```objc
-// invalidSeeds会返回错误的助记单词列表
-NSMutableArray *invalidSeeds = [NSMutableArray array];
-
-ONEError *error = [ONEChatClient seedIsValid:seed invalidWords:&invalidSeeds];
-```   
-
+	```objc
+	// invalidSeeds会返回错误的助记单词列表
+	NSMutableArray *invalidSeeds = [NSMutableArray array];
+    
+    ONEError *error = [ONEChatClient seedIsValid:seed invalidWords:&invalidSeeds];
+	```   
+	
 - 获取加密助记词   
 
-加密助记词是通过助记词和用户密码通过一系列加密生成的加密字符串
+	加密助记词是通过助记词和用户密码通过一系列加密生成的加密字符串
 
-```objc
-NSString *encryptedSeed = [ONEChatClient getEncryptedSeed];
-```   
-
+	```objc
+	NSString *encryptedSeed = [ONEChatClient getEncryptedSeed];
+	```   
+	
 - 用密码解密加密后的助记词   
 
-```objc
-NSString *seed = [ONEChatClient aesCommonDecryptWithPass:password string:encryptedSeed];
-```
-
+	```objc
+	NSString *seed = [ONEChatClient aesCommonDecryptWithPass:password string:encryptedSeed];
+	```
+	
 ### 注册   
 
 - 生成账号信息
 
-```objc
-WSAccountInfo* info = [[WSAccountInfo alloc] init];
-info.name = name;    // 用户名
-info.nickname = nickname;    // 昵称
-info.referrer = invitecode;    // 邀请码
-info.sex = AccountMan;    // 性别
-```   
-
+	```objc
+	WSAccountInfo* info = [[WSAccountInfo alloc] init];
+	info.name = name;	// 用户名
+	info.nickname = nickname;	// 昵称
+	info.referrer = invitecode;	// 邀请码
+	info.sex = AccountMan;	// 性别
+	```   
+	
 - 注册账号   
 
-注册账号需要传`WSAccountInfo`对象、助记词以及密码   
+	注册账号需要传`WSAccountInfo`对象、助记词以及密码   
 
 
-```objc
-[[ONEChatClient sharedClient] createAccount:info seed:seed password:password completion:^(ONEError *error){
+	```objc
+	[[ONEChatClient sharedClient] createAccount:info seed:seed password:password completion:^(ONEError *error){
+	
+		dispatch_async(dispatch_get_main_queue(), ^{
 
-dispatch_async(dispatch_get_main_queue(), ^{
+   			if (!error) {
+		
+					// 注册成功
+    			} else {
+					// 注册失败
+   			}
+		});
+	}];
 
-if (!error) {
-
-// 注册成功
-} else {
-// 注册失败
-}
-});
-}];
-
-```
-> 注册成功之后会回调`- (void)accountVerificationFinish:(AccountVerifyType)type;`在此方法中需要去做获取token等一系列操作。`delegate`使用方法使用见。   
-
+	```
+	> 注册成功之后会回调`- (void)accountVerificationFinish:(AccountVerifyType)type;`在此方法中需要去做获取token等一系列操作。`delegate`使用方法使用见。   
+	
 ### 恢复   
 
 - 恢复账号   
 
-恢复账号需要传入助记词以及密码
+	恢复账号需要传入助记词以及密码
 
-```objc
-[[ONEChatClient sharedClient] recoverAccount:seed password:self.miMatextFiled.text completion:^(ONEError *error) {
-
-dispatch_async(dispatch_get_main_queue(), ^{
-
-if (!error) {
-// 恢复成功
-} else {
-// 恢复失败
-}
-});
-}];
-```
-> 恢复成功之后也会回调`- (void)accountVerificationFinish:(AccountVerifyType)type;`。在此方法中需要去做获取token等一系列操作。`delegate`使用方法使用见。    
-
+	```objc
+	[[ONEChatClient sharedClient] recoverAccount:seed password:self.miMatextFiled.text completion:^(ONEError *error) {
+       
+        dispatch_async(dispatch_get_main_queue(), ^{
+           
+            if (!error) {
+                // 恢复成功
+            } else {
+                // 恢复失败
+            }
+        });
+    }];
+	```
+	> 恢复成功之后也会回调`- (void)accountVerificationFinish:(AccountVerifyType)type;`。在此方法中需要去做获取token等一系列操作。`delegate`使用方法使用见。    
+	
 ### 验证密码   
 
 - 验证密码   
 
-APP每次启动,如果本地存在账号，则不需要进行注册或者恢复操作，通过验证密码可以激活账号。   
-
-```objc
-BOOL state = [ONEChatClient verifyAccountWithPassword:password];
-```
-> 验证密码成功之后也会回调`- (void)accountVerificationFinish:(AccountVerifyType)type;`。在此方法中需要去做获取token等一系列操作。`delegate`使用方法使用见。   
-
+	APP每次启动,如果本地存在账号，则不需要进行注册或者恢复操作，通过验证密码可以激活账号。   
+	
+	```objc
+	BOOL state = [ONEChatClient verifyAccountWithPassword:password];
+	```
+	> 验证密码成功之后也会回调`- (void)accountVerificationFinish:(AccountVerifyType)type;`。在此方法中需要去做获取token等一系列操作。`delegate`使用方法使用见。   
+	
 
 ## 账号管理   
 
@@ -144,234 +142,234 @@ BOOL state = [ONEChatClient verifyAccountWithPassword:password];
 
 - AccountName
 
-`AccountName`为注册时传入的用户名   
-获取自己的`AccountName`:
-
-```objc
-NSString *accountName = [ONEChatClient homeAccountName];
-```
+	`AccountName`为注册时传入的用户名   
+	获取自己的`AccountName`:
+	
+	```objc
+	NSString *accountName = [ONEChatClient homeAccountName];
+	```
 
 - AccountId
 
-`AccountId`是服务器生成的唯一ID，格式为`1.2.xxx`。   
-获取自己的`AccountId`:
-
-```objc
-NSString *accountId = [ONEChatClient homeAccountId];
-```   
-
+	`AccountId`是服务器生成的唯一ID，格式为`1.2.xxx`。   
+	获取自己的`AccountId`:
+	
+	```objc
+	NSString *accountId = [ONEChatClient homeAccountId];
+	```   
+	
 - AccountInfo   
 
-`AccountInfo`为自己的账号信息，包括用户名、昵称、性别、头像URL等信息。   
-获取自己的`AccountInfo`:   
-
-```objc
-WSAccountInfo *info = [ONEChatClient homeAccountInfo];
-```
-
+	`AccountInfo`为自己的账号信息，包括用户名、昵称、性别、头像URL等信息。   
+	获取自己的`AccountInfo`:   
+	
+	```objc
+	WSAccountInfo *info = [ONEChatClient homeAccountInfo];
+	```
+	
 - 本地是否有账号信息   
 
-```objc
-BOOL isExist = [ONEChatClient isHomeAccountExist];
-```   
-
+	```objc
+	BOOL isExist = [ONEChatClient isHomeAccountExist];
+	```   
+	
 - 本地账号是否已经激活   
 
-```objc
-BOOL isActive = [ONEChatClient isHomeAccountActive];   
-```
-
+	```objc
+	BOOL isActive = [ONEChatClient isHomeAccountActive];   
+	```
+	
 - 更新本地账号信息   
 
-```objc
-BOOL isSuccess = [ONEChatClient saveAccountInfo:accountInfo];
-```
-
+	```objc
+	BOOL isSuccess = [ONEChatClient saveAccountInfo:accountInfo];
+	```
+	
 - 更新用户信息到Server   
 
-只能更新用户性别、昵称、简介
+	只能更新用户性别、昵称、简介
 
-```objc
-[[ONEChatClient sharedClient] pushAccountInfo:accInfo completion:^(ONEError *error) {
-
-dispatch_async(dispatch_get_main_queue(), ^{
-if (!error) {
-// 更新成功
-} else {
-// 更新失败
-}
-});
-}];
-
-```   
-
+	```objc
+    [[ONEChatClient sharedClient] pushAccountInfo:accInfo completion:^(ONEError *error) {
+       
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!error) {
+            		// 更新成功
+            } else {
+            		// 更新失败
+            }
+        });
+    }];
+	
+	```   
+	
 - 上传用户头像   
 
-传入UIImage对象
+	传入UIImage对象
 
-```objc
-[[ONEChatClient sharedClient] uploadAvatar:image completion:^(ONEError *error) {
-
-dispatch_async(dispatch_get_main_queue(), ^{
-if (!error) {
-// 上传成功
-} else {
-// 上传失败
-}
-});
-}];
-```   
-
+	```objc
+	[[ONEChatClient sharedClient] uploadAvatar:image completion:^(ONEError *error) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!error) {
+            		// 上传成功
+           } else {
+           		// 上传失败
+           }
+        });
+    }];
+	```   
+	
 - 从服务器获取用户头像URL   
 
 
-```
-[[ONEChatClient sharedClient] fetchUserAvatarUrl:account_id completion:^(ONEError *error, NSString *newAvatarUrl) {
-
-dispatch_async(dispatch_get_main_queue(), ^{
-
-if (!error) {
-WSAccountInfo *info = [ONEChatClient accountInfoWithName:accountName];
-info.avatar_url = newAvatarUrl;
-[ONEChatClient saveAccountInfo:info];
-}
-});
-}];
-```
-
-获取到的头像URL在界面展示时需要拼接Host   
-
-```objc
-NSString *urlString = [NSString stringWithFormat:@"%@%@",[ONEUrlHelper userAvatarPrefix], accountInfo.avatar_url];
-```
+	```
+	[[ONEChatClient sharedClient] fetchUserAvatarUrl:account_id completion:^(ONEError *error, NSString *newAvatarUrl) {
+       
+        dispatch_async(dispatch_get_main_queue(), ^{
+           
+            if (!error) {
+                WSAccountInfo *info = [ONEChatClient accountInfoWithName:accountName];
+                info.avatar_url = newAvatarUrl;
+                [ONEChatClient saveAccountInfo:info];
+            }
+        });
+    }];
+	```
+	
+	获取到的头像URL在界面展示时需要拼接Host   
+	
+	```objc
+	NSString *urlString = [NSString stringWithFormat:@"%@%@",[ONEUrlHelper userAvatarPrefix], accountInfo.avatar_url];
+	```
 
 
 ### 他人账号信息
 
 - 获取账号信息   
 
-```objc
-// 根据accountId获取账号信息
-WSAccountInfo *info = [ONEChatClient accountInfoWithId:accountId];
-// 根据accountName获取账号信息
-WSAccountInfo *info = [ONEChatClient accountInfoWithName:accountName];
-// 根据accountName获取accountId
-NSString *accountId = [ONEChatClient accountIdWithName:accountName];
-```
+	```objc
+	// 根据accountId获取账号信息
+	WSAccountInfo *info = [ONEChatClient accountInfoWithId:accountId];
+	// 根据accountName获取账号信息
+	WSAccountInfo *info = [ONEChatClient accountInfoWithName:accountName];
+	// 根据accountName获取accountId
+	NSString *accountId = [ONEChatClient accountIdWithName:accountName];
+	```
 
 - 通过`accountName`获取账号信息，如果本地有，取本地，本地没有从Server拉取   
 
-```objc
-[[ONEChatClient sharedClient] pullAccountInfoWithAccountName:accountName completion:^(ONEError *error, WSAccountInfo *accountInfo) {
-// 获取成功之后会自动更新本地存储的账号信息                    
-}];
-```   
-
+	```objc
+	[[ONEChatClient sharedClient] pullAccountInfoWithAccountName:accountName completion:^(ONEError *error, WSAccountInfo *accountInfo) {
+	    // 获取成功之后会自动更新本地存储的账号信息                    
+	}];
+	```   
+	
 - 通过`accountName`获取账号信息，直接从Server拉取更新本地   
 
-```objc
-[[ONEChatClient sharedClient] updateFriendAccountInfoWithCompletion:^(ONEError *error) {
-if (!error) {
-// 成功
-}
-}];
-```
-
+	```objc
+    [[ONEChatClient sharedClient] updateFriendAccountInfoWithCompletion:^(ONEError *error) {
+       	if (!error) {
+       		// 成功
+       	}
+    }];
+	```
+	
 - 批量获取账号信息   
-
-通过`accountId`列表获取,自动更新本地   
-
-```objc
-[[ONEChatClient sharedClient] pullAccountInfosWithAccountIdList:needFetchList completion:^(ONEError *error) {
-}];
-```   
-
+	
+	通过`accountId`列表获取,自动更新本地   
+	
+	```objc
+	[[ONEChatClient sharedClient] pullAccountInfosWithAccountIdList:needFetchList completion:^(ONEError *error) {
+   }];
+	```   
+	
 ## 消息管理   
 
 ### 消息构造   
 
 
-- 消息Body        
+- 消息Body		
 
-|消息类型|ONEMessageBodyType|支持类型|   
-|:--:|:--:|:--:|   
-|文本|ONEMessageBodyTypeText|全部|
-|图片|ONEMessageBodyTypeImage|全部|
-|位置|ONEMessageBodyTypeLocation|全部|
-|语音|ONEMessageBodyTypeVoice|全部|
-|红包|ONEMessageBodyTypeRedpacket|群聊|
+	|消息类型|ONEMessageBodyType|支持类型|   
+	|:--:|:--:|:--:|   
+	|文本|ONEMessageBodyTypeText|全部|
+	|图片|ONEMessageBodyTypeImage|全部|
+	|位置|ONEMessageBodyTypeLocation|全部|
+	|语音|ONEMessageBodyTypeVoice|全部|
+	|红包|ONEMessageBodyTypeRedpacket|群聊|
 
 - 文本消息   
 
-```objc
-NSString *willSendText = @"message";
-ONETextMessageBody *body = [[ONETextMessageBody alloc] initWithText:willSendText];
-```   
-
+	```objc
+	NSString *willSendText = @"message";
+	ONETextMessageBody *body = [[ONETextMessageBody alloc] initWithText:willSendText];
+	```   
+	
 - 图片消息   
 
-```objc
-NSData *imageData = UIImageJPEGRepresentation(image, 1);
-ONEImageMessageBody *body = [[ONEImageMessageBody alloc] initWithData:imageData];
-```   
-
+	```objc
+	NSData *imageData = UIImageJPEGRepresentation(image, 1);
+	ONEImageMessageBody *body = [[ONEImageMessageBody alloc] initWithData:imageData];
+	```   
+	
 - 位置消息   
 
-```objc
-double latitude = 1.0;
-double longitude = 1.0;
-NSString *address = @"北京市";
-ONELocationMessageBody *body = [[ONELocationMessageBody alloc] initWithLatitude:latitude longitude:longitude address:address];
-```   
+	```objc
+	double latitude = 1.0;
+	double longitude = 1.0;
+	NSString *address = @"北京市";
+	ONELocationMessageBody *body = [[ONELocationMessageBody alloc] initWithLatitude:latitude longitude:longitude address:address];
+	```   
 
 - 语音消息
 
-```objc
-NSString *voiceLocalPath = @"语音文件本地路径";
-int duration = 语音时长;
-ONEVoiceMessageBody *body = [[ONEVoiceMessageBody alloc] initWithLocalPath:localPath];
-body.duration = duration;
-```   
-
+	```objc
+	NSString *voiceLocalPath = @"语音文件本地路径";
+	int duration = 语音时长;
+	ONEVoiceMessageBody *body = [[ONEVoiceMessageBody alloc] initWithLocalPath:localPath];
+	body.duration = duration;
+	```   
+	
 - 红包消息   
 
-```objc
-NSDictionary *dic = @{
-@"red_packet_id":红包ID,
-@"red_packet_msg":红包留言
-};
-NSString *params = [dic yy_modelToJSONString];
-ONERedPacketMessageBody *body = [[ONERedPacketMessageBody alloc] initWithPacket:params];
-```   
-
+	```objc
+	NSDictionary *dic = @{
+	                      @"red_packet_id":红包ID,
+	                      @"red_packet_msg":红包留言
+	                      };
+   NSString *params = [dic yy_modelToJSONString];
+   ONERedPacketMessageBody *body = [[ONERedPacketMessageBody alloc] initWithPacket:params];
+	```   
+	
 - ONEMessage构造   
 
-- 消息类型            
+	- 消息类型			
 
-|消息类型|ONEChatType|
-|:--:|:--:|
-|单聊|ONEChatTypeChat|
-|群聊|ONEChatTypeGroupChat|
+		|消息类型|ONEChatType|
+		|:--:|:--:|
+		|单聊|ONEChatTypeChat|
+		|群聊|ONEChatTypeGroupChat|
+		
+	- 消息状态   
 
-- 消息状态   
+		|消息状态|ONEMessageStatus|
+		|:--:|:--:|
+		|正在发送|ONEMessageStatusDelivering|
+		|发送成功|ONEMessageStatusSuccessed|
+		|发送失败|ONEMessageStatusFailed|
 
-|消息状态|ONEMessageStatus|
-|:--:|:--:|
-|正在发送|ONEMessageStatusDelivering|
-|发送成功|ONEMessageStatusSuccessed|
-|发送失败|ONEMessageStatusFailed|
-
-构造`ONEMessage`时，`from`是自己的`accountName`,单聊时，`to`为聊天对方的`accountName`。群聊时，`to`为群组ID。需要指定消息类型。
-
-```objc
-NSString *toUser = @"username";    // 对方的accountName，如果是群的话为群组ID
-ONETextMessageBody *body = [[ONETextMessageBody alloc] initWithText:@"msg"];
-NSString *from = [ONEChatClient homeAccountName];
-ONEMessage *message = [[ONEMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:nil];
-message.chatType = ONEChatTypeChat;    // 消息类型
-message.timestamp = [[ONEChatClient date] timeIntervalSince1970]*1000;
-```   
-
+	构造`ONEMessage`时，`from`是自己的`accountName`,单聊时，`to`为聊天对方的`accountName`。群聊时，`to`为群组ID。需要指定消息类型。
+	
+	```objc
+	NSString *toUser = @"username";	// 对方的accountName，如果是群的话为群组ID
+	ONETextMessageBody *body = [[ONETextMessageBody alloc] initWithText:@"msg"];
+   NSString *from = [ONEChatClient homeAccountName];
+   ONEMessage *message = [[ONEMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:nil];
+    message.chatType = ONEChatTypeChat;	// 消息类型
+    message.timestamp = [[ONEChatClient date] timeIntervalSince1970]*1000;
+	```   
+	
 ### 发送消息   
 
 构造完成`ONEMessage`对象完成后，调用SDK提供的api进行消息的发送操作。   
@@ -379,13 +377,13 @@ message.timestamp = [[ONEChatClient date] timeIntervalSince1970]*1000;
 
 ```objc
 [[ONEChatClient sharedClient] sendMessage:message progress:nil completion:^(ONEMessage *message, ONEError *error) {
-
-if (!error) {
-// 发送成功
-} else {
-// 发送失败
-}
-}];
+        
+    if (!error) {
+			// 发送成功
+    } else {
+			// 发送失败
+    }
+ }];
 ```   
 
 ### 接收消息   
@@ -400,10 +398,10 @@ if (!error) {
 
 ```objc
 /**
-收到新消息
+ 收到新消息
 
-@param aMessages 消息数组List<ONEMessage>
-*/
+ @param aMessages 消息数组List<ONEMessage>
+ */
 - (void)didReceiveMessages:(NSArray *)aMessages;
 ```   
 
@@ -412,73 +410,73 @@ if (!error) {
 ```objc
 - (void)didReceiveMessages:(NSArray *)aMessages
 {
-for (ONEMessage *msg in aMessages) {
-
-ONEMessageBody *body = msg.body;
-switch(body.type) {
-// 文本消息
-case ONEMessageBodyTypeText: 
-{
-ONETextMessageBody *textBody = (ONETextMessageBody *)body;
-NSString *receiveText = textBody.text;
-}
-break;
-// 图片消息,收到图片消息SDK会自动下载，下载缓存本地之后会将本地路径和远程路径做映射。
-// 通过消息附件的远程路径获取本地路径进行展示。
-case ONEMessageBodyTypeImage:
-{
-ONEImageMessageBody *imgMessageBody = (ONEImageMessageBody *)body;
-
-NSString *localPath = imgMessageBody.localPath;
-NSString *remotePath = imgMessageBody.remotePath;
-if (localPath == nil) {
-
-localPath = [ONEChatClient localPathFromRemotePath:remotePath];
-}
-}
-break;
-// 语音消息，处理等同图片消息
-case ONEMessageBodyTypeVoice:
-{
-ONEVoiceMessageBody *voiceBody = (ONEVoiceMessageBody *)body;
-NSString *localPath = voiceBody.localPath;
-NSString *remotePath = voiceBody.remotePath;
-if (localPath == nil) {
-
-localPath = [ONEChatClient localPathFromRemotePath:remotePath];
-}
-}
-break;
-// 位置消息
-case ONEMessageBodyTypeLocation:
-{
-ONELocationMessageBody *locationBody = (ONELocationMessageBody *)body;
-NSString *address = locationBody.address;
-long latitude = locationBody.latitude;
-long longitude = locationBody.longitude;
-}
-break;
-// 红包消息
-case ONEMessageBodyTypeRedpacket:
-{
-ONERedPacketMessageBody *msgBody = (ONERedPacketMessageBody *)body;
-NSString *params = msgBody.redpacketParam;
-if (params.length > 0) {
-
-NSData *jsonData = [params dataUsingEncoding:NSUTF8StringEncoding];
-if (jsonData) {
-
-NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
-NSString *red_id = dic[@"red_packet_id"];
-NSString *red_msg = dic[@"red_packet_msg"];
-}
-}
-}
-break;
-default:
-break;
-}
-}
+	for (ONEMessage *msg in aMessages) {
+		
+		ONEMessageBody *body = msg.body;
+		switch(body.type) {
+			// 文本消息
+			case ONEMessageBodyTypeText: 
+			{
+				ONETextMessageBody *textBody = (ONETextMessageBody *)body;
+				NSString *receiveText = textBody.text;
+			}
+			break;
+			// 图片消息,收到图片消息SDK会自动下载，下载缓存本地之后会将本地路径和远程路径做映射。
+			// 通过消息附件的远程路径获取本地路径进行展示。
+			case ONEMessageBodyTypeImage:
+			{
+				ONEImageMessageBody *imgMessageBody = (ONEImageMessageBody *)body;
+                
+	            NSString *localPath = imgMessageBody.localPath;
+	            NSString *remotePath = imgMessageBody.remotePath;
+	            if (localPath == nil) {
+	                
+	                localPath = [ONEChatClient localPathFromRemotePath:remotePath];
+	            }
+			}
+			break;
+			// 语音消息，处理等同图片消息
+			case ONEMessageBodyTypeVoice:
+			{
+				ONEVoiceMessageBody *voiceBody = (ONEVoiceMessageBody *)body;
+				NSString *localPath = voiceBody.localPath;
+                NSString *remotePath = voiceBody.remotePath;
+                if (localPath == nil) {
+                    
+                    localPath = [ONEChatClient localPathFromRemotePath:remotePath];
+                }
+			}
+			break;
+			// 位置消息
+			case ONEMessageBodyTypeLocation:
+			{
+				ONELocationMessageBody *locationBody = (ONELocationMessageBody *)body;
+                NSString *address = locationBody.address;
+                long latitude = locationBody.latitude;
+                long longitude = locationBody.longitude;
+			}
+			break;
+			// 红包消息
+			case ONEMessageBodyTypeRedpacket:
+			{
+				ONERedPacketMessageBody *msgBody = (ONERedPacketMessageBody *)body;
+                NSString *params = msgBody.redpacketParam;
+                if (params.length > 0) {
+                    
+                    NSData *jsonData = [params dataUsingEncoding:NSUTF8StringEncoding];
+                    if (jsonData) {
+                        
+                        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
+                        NSString *red_id = dic[@"red_packet_id"];
+                        NSString *red_msg = dic[@"red_packet_msg"];
+                    }
+                }
+			}
+			break;
+			default:
+                break;
+		}
+	}
 } 
 ```   
 
@@ -489,30 +487,28 @@ break;
 
 - 获取会话列表   
 
-```objc
-NSArray *list = [[ONEChatClient sharedClient] getAllConversations];
-```
+	```objc
+	NSArray *list = [[ONEChatClient sharedClient] getAllConversations];
+	```
 
 - 获取单个会话实例   
 
 
-```objc
-// 如果本地没有这个会话会创建新的实例
-ONEConversation *conversation = [[ONEChatClient sharedClient] getConversation:conversationChatter type:conversationType createIfNotExist:YES];
-```
-
+	```objc
+	// 如果本地没有这个会话会创建新的实例
+	ONEConversation *conversation = [[ONEChatClient sharedClient] getConversation:conversationChatter type:conversationType createIfNotExist:YES];
+	```
+	
 - 删除某个人的会话
 
-```objc
-[[ONEChatClient sharedClient] deleteConversationFromUser:accountName];
-```   
-
+	```objc
+	[[ONEChatClient sharedClient] deleteConversationFromUser:accountName];
+	```   
+	
 - 删除某个会话实例
 
-```objc
-[[ONEChatClient sharedClient] deleteConversation:conversation];
-```
-
-
-
+	```objc
+	[[ONEChatClient sharedClient] deleteConversation:conversation];
+	```
+    
 
