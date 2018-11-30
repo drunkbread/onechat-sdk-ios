@@ -92,4 +92,31 @@
  @param completion 好友申请数
  */
 - (void)fetchFriendApplyCount:(void(^)(ONEError *error, NSInteger count))completion;
+
+
+/**
+ 从服务器获取黑名单列表
+
+ @param completion 回调
+ */
+- (void)fetchMyBlackList:(void(^)(ONEError *error, NSArray *list))completion;
+
+
+/**
+ 添加黑名单
+
+ @param account_id accountName
+ @param completion 回调
+ */
+- (void)addFriendToBlacklist:(NSString *)accountName
+                  completion:(void(^)(ONEError *error))completion;
+
+/**
+ 从黑名单中移除
+
+ @param account_id accountName
+ @param completion 回调
+ */
+- (void)removeFriendFromBlacklist:(NSString *)accountName
+                       completion:(void(^)(ONEError *error))completion;
 @end

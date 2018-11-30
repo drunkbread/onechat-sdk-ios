@@ -118,4 +118,6 @@
  @return url
  */
 + (NSString *)syncAddressbookHttpUrl;
+
++ (NSString *)reportHttpUrl;
 @end
